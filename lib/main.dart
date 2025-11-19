@@ -11,24 +11,21 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Calculadora de IMC',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const ImcPage(),
+      home: const ImcCalculator(),
     );
   }
 }
 
-class ImcPage extends StatefulWidget {
-  const ImcPage({super.key});
+class ImcCalculator extends StatefulWidget {
+  const ImcCalculator({super.key});
 
   @override
-  State<ImcPage> createState() => _ImcPageState();
+  State<ImcCalculator> createState() => _ImcCalculatorState();
 }
 
-class _ImcPageState extends State<ImcPage> {
-  final TextEditingController pesoController = TextEditingController();
-  final TextEditingController alturaController = TextEditingController();
-
+class _ImcCalculatorState extends State<ImcCalculator> {
+  final pesoController = TextEditingController();
+  final alturaController = TextEditingController();
   String resultado = "";
 
   void calcularIMC() {
@@ -36,16 +33,13 @@ class _ImcPageState extends State<ImcPage> {
     double altura = double.tryParse(alturaController.text) ?? 0;
 
     if (peso <= 0 || altura <= 0) {
-      setState(() {
-        resultado = "Digite valores válidos!";
-      });
+      setState(() => resultado = "Digite valores válidos.");
       return;
     }
 
     double imc = peso / (altura * altura);
 
     String classificacao;
-
     if (imc < 18.5) {
       classificacao = "Abaixo do peso";
     } else if (imc < 24.9) {
@@ -61,52 +55,119 @@ class _ImcPageState extends State<ImcPage> {
     }
 
     setState(() {
-      resultado =
-          "IMC: ${imc.toStringAsFixed(2)}\nClassificação: $classificacao";
+      resultado = "IMC: ${imc.toStringAsFixed(2)}\n$classificacao";
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Calculadora de IMC"),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: pesoController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: "Peso (kg)",
-                border: OutlineInputBorder(),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6A5AE0), Color(0xFF8A4FFF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              width: 350,
+              padding: const EdgeInsets.all(25),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.95),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  const Text(
+                    "Calculadora de IMC",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF6A5AE0),
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+
+                  // Campo Peso
+                  TextField(
+                    controller: pesoController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: "Peso (kg)",
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Campo Altura
+                  TextField(
+                    controller: alturaController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: "Altura (m)",
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Botão Calcular
+                  SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: calcularIMC,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF6A5AE0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        elevation: 6,
+                      ),
+                      child: const Text(
+                        "Calcular",
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Resultado animado
+                  AnimatedOpacity(
+                    opacity: resultado.isEmpty ? 0 : 1,
+                    duration: const Duration(milliseconds: 400),
+                    child: Text(
+                      resultado,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4B2ED3),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: alturaController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: "Altura (m)",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: calcularIMC,
-              child: const Text("Calcular IMC"),
-            ),
-            const SizedBox(height: 30),
-            Text(
-              resultado,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-          ],
+          ),
         ),
       ),
     );
