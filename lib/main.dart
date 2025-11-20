@@ -165,7 +165,7 @@ class _ImcCalculatorState extends State<ImcCalculator> {
             ),
           ),
         ),
-      ),
-    );
-  }
+      ),
+    );
+  }
 }
